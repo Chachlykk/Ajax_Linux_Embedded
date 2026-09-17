@@ -64,6 +64,9 @@ if [[ -n $1 ]]; then
 	git -C $1 config --local user.name "$USER_NAME"
 	git -C $1 config --local user.email "$USER_EMAIL"
 	git -C $1 config --local init.defaultBranch "$USER_BRANCH"
+	echo "# $(basename "$1")" > "$1/README.md"
+	git -C "$1" add README.md
+	git -C "$1" commit -m "Initial commit"
 	if [[ -n $2 ]]; then
 		git -C $1 remote add origin $2
 	fi
