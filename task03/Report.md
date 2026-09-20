@@ -313,3 +313,7 @@ index f38e447..c4767aa 100644<br>
  <br>
    s->MPCCombineMethodAsNeededForPStateChangeAndVoltage = false;<br>
    s->MPCCombineMethodAsPossible = false;<br>
+
+# task 4
+зміни стосуються переважно пробілів, відступів рядків, розташування фігурних дужок.<br>
+різні версії clang-format майже не відрізняються
