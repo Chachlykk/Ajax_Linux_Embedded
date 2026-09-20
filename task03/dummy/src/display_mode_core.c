@@ -9549,7 +9549,7 @@ dml_bool_t dml_core_mode_support(struct display_mode_lib_st* mode_lib) {
   CalculateSwathAndDETConfiguration(
       &mode_lib->scratch,
       CalculateSwathAndDETConfiguration_params); /* dml_bool_t
-                                                    *ViewportSizeSupport */
+                                                  *ViewportSizeSupport */
 
   s->MPCCombineMethodAsNeededForPStateChangeAndVoltage = false;
   s->MPCCombineMethodAsPossible = false;
