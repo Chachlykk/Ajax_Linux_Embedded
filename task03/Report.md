@@ -293,3 +293,23 @@
 +WrapNamespaceBodyWithEmptyLines: Leave<br>
  ...<br>
  <br>
+
+# task 3(б)
+ 
+Основні зміни форматування включають переноси рядків, зміну кількості пробілів, вирівнювання дефайнів <br>
+
+# task3 (в)
+
+diff --git a/task03/dummy/src/display_mode_core.c b/task03/dummy/src/display_mode_core.c<br>
+index f38e447..c4767aa 100644<br>
+--- a/task03/dummy/src/display_mode_core.c<br>
++++ b/task03/dummy/src/display_mode_core.c<br>
+@@ -9549,7 +9549,7 @@ dml_bool_t dml_core_mode_support(struct display_mode_lib_st* mode_lib) {<br>
+   CalculateSwathAndDETConfiguration(<br>
+       &mode_lib->scratch,<br>
+       CalculateSwathAndDETConfiguration_params); /* dml_bool_t<br>
+-                                                    *ViewportSizeSupport */<br>
++                                                  *ViewportSizeSupport */<br>
+ <br>
+   s->MPCCombineMethodAsNeededForPStateChangeAndVoltage = false;<br>
+   s->MPCCombineMethodAsPossible = false;<br>
