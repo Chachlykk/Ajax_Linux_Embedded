@@ -8,70 +8,42 @@
 #include "gaudiP.h"
 #include "../include/gaudi/asic_reg/gaudi_regs.h"
 
-#define GAUDI_NUMBER_OF_LBW_RR_REGS	28
-#define GAUDI_NUMBER_OF_HBW_RR_REGS	24
-#define GAUDI_NUMBER_OF_LBW_RANGES	10
+#define GAUDI_NUMBER_OF_LBW_RR_REGS 28
+#define GAUDI_NUMBER_OF_HBW_RR_REGS 24
+#define GAUDI_NUMBER_OF_LBW_RANGES 10
 
 static u64 gaudi_rr_lbw_hit_aw_regs[GAUDI_NUMBER_OF_LBW_RR_REGS] = {
-	mmDMA_IF_W_S_SOB_HIT_WPROT,
-	mmDMA_IF_W_S_DMA0_HIT_WPROT,
-	mmDMA_IF_W_S_DMA1_HIT_WPROT,
-	mmDMA_IF_E_S_SOB_HIT_WPROT,
-	mmDMA_IF_E_S_DMA0_HIT_WPROT,
-	mmDMA_IF_E_S_DMA1_HIT_WPROT,
-	mmDMA_IF_W_N_SOB_HIT_WPROT,
-	mmDMA_IF_W_N_DMA0_HIT_WPROT,
-	mmDMA_IF_W_N_DMA1_HIT_WPROT,
-	mmDMA_IF_E_N_SOB_HIT_WPROT,
-	mmDMA_IF_E_N_DMA0_HIT_WPROT,
-	mmDMA_IF_E_N_DMA1_HIT_WPROT,
-	mmSIF_RTR_0_LBW_RANGE_PROT_HIT_AW,
-	mmSIF_RTR_1_LBW_RANGE_PROT_HIT_AW,
-	mmSIF_RTR_2_LBW_RANGE_PROT_HIT_AW,
-	mmSIF_RTR_3_LBW_RANGE_PROT_HIT_AW,
-	mmSIF_RTR_4_LBW_RANGE_PROT_HIT_AW,
-	mmSIF_RTR_5_LBW_RANGE_PROT_HIT_AW,
-	mmSIF_RTR_6_LBW_RANGE_PROT_HIT_AW,
-	mmSIF_RTR_7_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_0_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_1_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_2_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_3_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_4_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_5_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_6_LBW_RANGE_PROT_HIT_AW,
-	mmNIF_RTR_7_LBW_RANGE_PROT_HIT_AW,
+	mmDMA_IF_W_S_SOB_HIT_WPROT,	   mmDMA_IF_W_S_DMA0_HIT_WPROT,
+	mmDMA_IF_W_S_DMA1_HIT_WPROT,	   mmDMA_IF_E_S_SOB_HIT_WPROT,
+	mmDMA_IF_E_S_DMA0_HIT_WPROT,	   mmDMA_IF_E_S_DMA1_HIT_WPROT,
+	mmDMA_IF_W_N_SOB_HIT_WPROT,	   mmDMA_IF_W_N_DMA0_HIT_WPROT,
+	mmDMA_IF_W_N_DMA1_HIT_WPROT,	   mmDMA_IF_E_N_SOB_HIT_WPROT,
+	mmDMA_IF_E_N_DMA0_HIT_WPROT,	   mmDMA_IF_E_N_DMA1_HIT_WPROT,
+	mmSIF_RTR_0_LBW_RANGE_PROT_HIT_AW, mmSIF_RTR_1_LBW_RANGE_PROT_HIT_AW,
+	mmSIF_RTR_2_LBW_RANGE_PROT_HIT_AW, mmSIF_RTR_3_LBW_RANGE_PROT_HIT_AW,
+	mmSIF_RTR_4_LBW_RANGE_PROT_HIT_AW, mmSIF_RTR_5_LBW_RANGE_PROT_HIT_AW,
+	mmSIF_RTR_6_LBW_RANGE_PROT_HIT_AW, mmSIF_RTR_7_LBW_RANGE_PROT_HIT_AW,
+	mmNIF_RTR_0_LBW_RANGE_PROT_HIT_AW, mmNIF_RTR_1_LBW_RANGE_PROT_HIT_AW,
+	mmNIF_RTR_2_LBW_RANGE_PROT_HIT_AW, mmNIF_RTR_3_LBW_RANGE_PROT_HIT_AW,
+	mmNIF_RTR_4_LBW_RANGE_PROT_HIT_AW, mmNIF_RTR_5_LBW_RANGE_PROT_HIT_AW,
+	mmNIF_RTR_6_LBW_RANGE_PROT_HIT_AW, mmNIF_RTR_7_LBW_RANGE_PROT_HIT_AW,
 };
 
 static u64 gaudi_rr_lbw_hit_ar_regs[GAUDI_NUMBER_OF_LBW_RR_REGS] = {
-	mmDMA_IF_W_S_SOB_HIT_RPROT,
-	mmDMA_IF_W_S_DMA0_HIT_RPROT,
-	mmDMA_IF_W_S_DMA1_HIT_RPROT,
-	mmDMA_IF_E_S_SOB_HIT_RPROT,
-	mmDMA_IF_E_S_DMA0_HIT_RPROT,
-	mmDMA_IF_E_S_DMA1_HIT_RPROT,
-	mmDMA_IF_W_N_SOB_HIT_RPROT,
-	mmDMA_IF_W_N_DMA0_HIT_RPROT,
-	mmDMA_IF_W_N_DMA1_HIT_RPROT,
-	mmDMA_IF_E_N_SOB_HIT_RPROT,
-	mmDMA_IF_E_N_DMA0_HIT_RPROT,
-	mmDMA_IF_E_N_DMA1_HIT_RPROT,
-	mmSIF_RTR_0_LBW_RANGE_PROT_HIT_AR,
-	mmSIF_RTR_1_LBW_RANGE_PROT_HIT_AR,
-	mmSIF_RTR_2_LBW_RANGE_PROT_HIT_AR,
-	mmSIF_RTR_3_LBW_RANGE_PROT_HIT_AR,
-	mmSIF_RTR_4_LBW_RANGE_PROT_HIT_AR,
-	mmSIF_RTR_5_LBW_RANGE_PROT_HIT_AR,
-	mmSIF_RTR_6_LBW_RANGE_PROT_HIT_AR,
-	mmSIF_RTR_7_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_0_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_1_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_2_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_3_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_4_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_5_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_6_LBW_RANGE_PROT_HIT_AR,
-	mmNIF_RTR_7_LBW_RANGE_PROT_HIT_AR,
+	mmDMA_IF_W_S_SOB_HIT_RPROT,	   mmDMA_IF_W_S_DMA0_HIT_RPROT,
+	mmDMA_IF_W_S_DMA1_HIT_RPROT,	   mmDMA_IF_E_S_SOB_HIT_RPROT,
+	mmDMA_IF_E_S_DMA0_HIT_RPROT,	   mmDMA_IF_E_S_DMA1_HIT_RPROT,
+	mmDMA_IF_W_N_SOB_HIT_RPROT,	   mmDMA_IF_W_N_DMA0_HIT_RPROT,
+	mmDMA_IF_W_N_DMA1_HIT_RPROT,	   mmDMA_IF_E_N_SOB_HIT_RPROT,
+	mmDMA_IF_E_N_DMA0_HIT_RPROT,	   mmDMA_IF_E_N_DMA1_HIT_RPROT,
+	mmSIF_RTR_0_LBW_RANGE_PROT_HIT_AR, mmSIF_RTR_1_LBW_RANGE_PROT_HIT_AR,
+	mmSIF_RTR_2_LBW_RANGE_PROT_HIT_AR, mmSIF_RTR_3_LBW_RANGE_PROT_HIT_AR,
+	mmSIF_RTR_4_LBW_RANGE_PROT_HIT_AR, mmSIF_RTR_5_LBW_RANGE_PROT_HIT_AR,
+	mmSIF_RTR_6_LBW_RANGE_PROT_HIT_AR, mmSIF_RTR_7_LBW_RANGE_PROT_HIT_AR,
+	mmNIF_RTR_0_LBW_RANGE_PROT_HIT_AR, mmNIF_RTR_1_LBW_RANGE_PROT_HIT_AR,
+	mmNIF_RTR_2_LBW_RANGE_PROT_HIT_AR, mmNIF_RTR_3_LBW_RANGE_PROT_HIT_AR,
+	mmNIF_RTR_4_LBW_RANGE_PROT_HIT_AR, mmNIF_RTR_5_LBW_RANGE_PROT_HIT_AR,
+	mmNIF_RTR_6_LBW_RANGE_PROT_HIT_AR, mmNIF_RTR_7_LBW_RANGE_PROT_HIT_AR,
 };
 
 static u64 gaudi_rr_lbw_min_aw_regs[GAUDI_NUMBER_OF_LBW_RR_REGS] = {
@@ -547,7 +519,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME0_CTRL_SHADOW_0_STATUS & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME0_CTRL_SHADOW_0_STATUS & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME0_CTRL_SHADOW_0_STATUS & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -715,7 +687,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME0_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME0_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME0_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -751,9 +723,10 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmMME0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmMME0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmMME0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmMME0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -841,7 +814,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME0_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME0_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME0_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -853,9 +826,10 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmMME0_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmMME0_QM_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmMME0_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmMME0_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -898,7 +872,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME0_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME0_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME0_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME0_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -939,7 +913,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME0_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME0_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME0_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -981,7 +955,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME1_CTRL_SHADOW_0_STATUS & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME1_CTRL_SHADOW_0_STATUS & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME1_CTRL_SHADOW_0_STATUS & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -1025,7 +999,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME2_CTRL_SHADOW_0_STATUS & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME2_CTRL_SHADOW_0_STATUS & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME2_CTRL_SHADOW_0_STATUS & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -1193,7 +1167,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME2_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME2_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME2_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -1229,9 +1203,10 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmMME2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmMME2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmMME2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmMME2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -1319,7 +1294,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME2_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME2_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME2_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -1332,9 +1307,10 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmMME2_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmMME2_QM_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmMME2_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmMME2_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -1377,7 +1353,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME2_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME2_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME2_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmMME2_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -1418,7 +1394,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME2_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME2_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME2_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -1460,7 +1436,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmMME3_CTRL_SHADOW_0_STATUS & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME3_CTRL_SHADOW_0_STATUS & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmMME3_CTRL_SHADOW_0_STATUS & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -1672,7 +1648,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -1708,7 +1684,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -1799,7 +1775,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA0_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA0_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA0_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -1811,7 +1787,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -1857,7 +1833,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA0_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA0_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA0_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -1898,7 +1874,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA0_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA0_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA0_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -2066,7 +2042,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA1_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA1_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA1_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -2102,7 +2078,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA1_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA1_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -2193,7 +2169,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA1_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA1_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA1_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -2206,7 +2182,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA1_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA1_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -2252,7 +2228,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA1_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA1_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA1_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -2293,7 +2269,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA1_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA1_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA1_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -2461,7 +2437,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA2_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA2_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA2_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -2497,7 +2473,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -2588,7 +2564,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA2_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA2_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA2_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -2601,7 +2577,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA2_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA2_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -2647,7 +2623,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA2_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA2_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA2_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -2688,7 +2664,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA2_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA2_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA2_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -2856,7 +2832,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -2892,7 +2868,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA3_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA3_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -2983,7 +2959,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA3_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA3_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA3_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -2996,7 +2972,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -3042,7 +3018,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA3_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA3_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA3_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -3083,7 +3059,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA3_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA3_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA3_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -3251,7 +3227,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA4_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA4_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA4_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -3287,7 +3263,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA4_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA4_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -3378,7 +3354,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA4_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA4_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA4_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -3391,7 +3367,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA4_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA4_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -3437,7 +3413,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA4_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA4_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA4_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -3478,7 +3454,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA4_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA4_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA4_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -3646,7 +3622,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA5_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA5_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA5_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -3682,7 +3658,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA5_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA5_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -3773,7 +3749,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA5_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA5_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA5_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -3786,7 +3762,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA5_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA5_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -3832,7 +3808,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA5_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA5_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA5_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -3873,7 +3849,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA5_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA5_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA5_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -4041,7 +4017,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA6_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA6_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA6_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -4077,7 +4053,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA6_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA6_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -4168,7 +4144,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA6_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA6_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA6_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -4181,7 +4157,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA6_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA6_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -4228,7 +4204,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA6_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA6_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA6_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -4269,7 +4245,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA6_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA6_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA6_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -4437,7 +4413,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA7_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA7_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA7_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -4473,7 +4449,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA7_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA7_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -4564,7 +4540,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA7_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA7_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA7_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -4577,7 +4553,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmDMA7_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 	word_offset =
 		((mmDMA7_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
 		<< 2;
@@ -4623,7 +4599,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA7_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA7_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA7_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -4664,7 +4640,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA7_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA7_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA7_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -4687,7 +4663,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA0_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA0_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA0_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA0_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -4752,7 +4728,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA1_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA1_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA1_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA1_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -4817,7 +4793,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA2_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA2_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA2_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA2_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -4881,7 +4857,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA3_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA3_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA3_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA3_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -4945,7 +4921,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA4_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA4_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA4_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA4_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -5009,7 +4985,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA5_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA5_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA5_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA5_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -5073,7 +5049,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA6_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA6_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA6_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA6_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -5137,7 +5113,7 @@ static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmDMA7_CORE_RD_MAX_OUTSTAND & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmDMA7_CORE_RD_MAX_OUTSTAND & PROT_BITS_OFFS) >> 7)
-			<< 2;
+		      << 2;
 	mask = 1U << ((mmDMA7_CORE_RD_MAX_OUTSTAND & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_CORE_RD_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmDMA7_CORE_RD_ARCACHE & 0x7F) >> 2);
@@ -5354,8 +5330,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -5391,9 +5368,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-				PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC0_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC0_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -5423,8 +5402,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM0_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_CP_DBG_0_0 & 0x7F) >> 2);
@@ -5481,8 +5460,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC0_QM0_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM0_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -5495,9 +5474,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC0_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC0_QM0_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -5539,8 +5519,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM0_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -5560,8 +5540,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM0_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM0_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -5581,8 +5561,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM0_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM0_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -5749,8 +5729,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC0_QM1_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC0_QM1_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -5786,9 +5767,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC0_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC0_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -5818,8 +5801,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM1_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_CP_DBG_0_0 & 0x7F) >> 2);
@@ -5876,8 +5859,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC0_QM1_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM1_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -5890,9 +5873,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC0_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC0_QM1_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -5934,8 +5918,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM1_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -5955,8 +5939,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM1_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC0_QM1_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -5976,8 +5960,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC0_QM1_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC0_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC0_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC0_QM1_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -6147,8 +6131,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC1_QM0_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC1_QM0_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -6184,9 +6169,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC1_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC1_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -6216,8 +6203,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM0_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_CP_DBG_0_0 & 0x7F) >> 2);
@@ -6274,8 +6261,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC1_QM0_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM0_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -6288,9 +6275,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC1_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC1_QM0_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -6331,8 +6319,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM0_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -6352,8 +6340,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM0_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM0_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -6373,8 +6361,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM0_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM0_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -6541,8 +6529,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC1_QM1_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC1_QM1_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -6578,9 +6567,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC1_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC1_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -6610,8 +6601,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM1_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_CP_DBG_0_0 & 0x7F) >> 2);
@@ -6668,8 +6659,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC1_QM1_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM1_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -6682,9 +6673,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC1_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC1_QM1_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -6726,8 +6718,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM1_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -6747,8 +6739,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM1_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC1_QM1_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -6768,8 +6760,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC1_QM1_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC1_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC1_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC1_QM1_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -6938,10 +6930,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 
 	WREG32(pb_addr + word_offset, ~mask);
 
-	pb_addr = (mmNIC2_QM0_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS)
-				>> 7) << 2;
+	pb_addr = (mmNIC2_QM0_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC2_QM0_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC2_QM0_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -6977,9 +6969,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC2_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC2_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -7009,8 +7003,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM0_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM0_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_CP_DBG_0_0 & 0x7F) >> 2);
@@ -7067,8 +7061,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM0_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC2_QM0_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM0_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -7081,9 +7075,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC2_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC2_QM0_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -7125,8 +7120,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM0_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM0_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -7146,8 +7141,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM0_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM0_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM0_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -7167,8 +7162,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM0_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM0_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -7335,8 +7330,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC2_QM1_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC2_QM1_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -7372,9 +7368,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC2_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC2_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -7404,8 +7402,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM1_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_CP_DBG_0_0 & 0x7F) >> 2);
@@ -7462,8 +7460,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC2_QM1_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM1_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -7476,9 +7474,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC2_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC2_QM1_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -7520,8 +7519,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM1_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -7541,8 +7540,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM1_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC2_QM1_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -7562,8 +7561,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC2_QM1_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC2_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC2_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC2_QM1_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -7733,8 +7732,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC3_QM0_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC3_QM0_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -7770,9 +7770,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC3_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC3_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -7802,8 +7804,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM0_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_CP_DBG_0_0 & 0x7F) >> 2);
@@ -7860,8 +7862,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC3_QM0_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM0_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -7874,9 +7876,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC3_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC3_QM0_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -7918,8 +7921,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM0_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -7939,8 +7942,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM0_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM0_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -7960,8 +7963,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM0_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM0_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -8128,8 +8131,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC3_QM1_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC3_QM1_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -8165,9 +8169,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC3_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC3_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -8197,8 +8203,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM1_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_CP_DBG_0_0 & 0x7F) >> 2);
@@ -8255,8 +8261,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC3_QM1_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM1_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -8269,9 +8275,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC3_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC3_QM1_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -8313,8 +8320,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM1_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -8334,8 +8341,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM1_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC3_QM1_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -8355,8 +8362,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC3_QM1_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC3_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC3_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC3_QM1_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -8526,8 +8533,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC4_QM0_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC4_QM0_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -8563,9 +8571,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC4_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC4_QM0_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -8595,8 +8605,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM0_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM0_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_CP_DBG_0_0 & 0x7F) >> 2);
@@ -8653,8 +8663,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC4_QM0_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM0_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -8667,9 +8677,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC4_QM0_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC4_QM0_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -8711,8 +8722,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM0_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM0_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -8732,8 +8743,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM0_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM0_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM0_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -8753,8 +8764,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM0_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM0_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM0_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -8921,8 +8932,9 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_CP_MSG_BASE2_ADDR_LO_2 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset =
+		((mmNIC4_QM1_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC4_QM1_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -8958,9 +8970,11 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC4_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >>
+		 7)
+		<< 2;
 	mask = 1U << ((mmNIC4_QM1_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -8990,8 +9004,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_CP_BARRIER_CFG_3 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM1_CP_BARRIER_CFG_3 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM1_CP_BARRIER_CFG_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_CP_BARRIER_CFG_4 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_CP_DBG_0_0 & 0x7F) >> 2);
@@ -9048,8 +9062,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_ARB_MST_AVAIL_CRED_24 &
-			PROT_BITS_OFFS) >> 7) << 2;
+	word_offset = ((mmNIC4_QM1_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM1_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -9062,9 +9076,10 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_ARB_MST_CHOISE_PUSH_OFST_23 &
-			PROT_BITS_OFFS) >> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmNIC4_QM1_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmNIC4_QM1_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -9106,8 +9121,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM1_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM1_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -9127,8 +9142,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_LOCAL_RANGE_BASE & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM1_LOCAL_RANGE_BASE & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM1_LOCAL_RANGE_BASE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_LOCAL_RANGE_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmNIC4_QM1_CSMR_STRICT_PRIO_CFG & 0x7F) >> 2);
@@ -9148,8 +9163,8 @@ static void gaudi_init_nic_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmNIC4_QM1_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmNIC4_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS)
-			>> 7) << 2;
+	word_offset = ((mmNIC4_QM1_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmNIC4_QM1_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -9337,7 +9352,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC0_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC0_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC0_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -9373,10 +9388,11 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 
-	word_offset = ((mmTPC0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+	word_offset =
+		((mmTPC0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 
 	mask = 1U << ((mmTPC0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
@@ -9465,7 +9481,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC0_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC0_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC0_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -9478,10 +9494,11 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC0_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-								PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 
-	word_offset = ((mmTPC0_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+	word_offset =
+		((mmTPC0_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC0_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -9524,7 +9541,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC0_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC0_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC0_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -9565,7 +9582,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC0_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC0_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC0_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -9601,7 +9618,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC0_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC0_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC0_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC0_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -9794,7 +9811,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC1_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC1_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC1_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -9830,9 +9847,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC1_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC1_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC1_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC1_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -9920,7 +9938,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC1_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC1_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC1_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -9933,10 +9951,11 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC1_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-								PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 
-	word_offset = ((mmTPC1_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+	word_offset =
+		((mmTPC1_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC1_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -9979,7 +9998,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC1_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC1_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC1_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -10020,7 +10039,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC1_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC1_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC1_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -10056,7 +10075,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC1_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC1_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC1_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC1_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -10249,7 +10268,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC2_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC2_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC2_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -10285,9 +10304,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC2_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -10375,7 +10395,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC2_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC2_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC2_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -10388,9 +10408,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC2_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC2_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC2_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC2_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -10433,7 +10454,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC2_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC2_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC2_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -10474,7 +10495,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC2_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC2_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC2_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -10510,7 +10531,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC2_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC2_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-								<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC2_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC2_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -10703,7 +10724,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC3_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC3_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC3_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -10739,9 +10760,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC3_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC3_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC3_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC3_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -10829,7 +10851,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC3_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC3_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC3_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -10842,9 +10864,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC3_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC3_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC3_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC3_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -10887,7 +10910,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC3_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC3_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC3_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -10928,7 +10951,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC3_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC3_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC3_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -10964,7 +10987,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC3_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC3_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC3_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC3_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -11157,7 +11180,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC4_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC4_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC4_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -11193,9 +11216,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC4_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC4_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC4_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC4_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -11283,7 +11307,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC4_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC4_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC4_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -11296,9 +11320,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC4_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC4_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC4_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC4_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -11341,7 +11366,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC4_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC4_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC4_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -11382,7 +11407,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC4_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC4_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC4_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -11418,7 +11443,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC4_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC4_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC4_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC4_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -11611,7 +11636,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -11647,9 +11672,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -11737,7 +11763,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC5_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC5_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC5_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -11750,9 +11776,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC5_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -11795,7 +11822,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC5_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC5_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC5_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -11836,7 +11863,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC5_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC5_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC5_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -11872,7 +11899,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC5_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC5_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC5_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC5_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -12065,7 +12092,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC6_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC6_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC6_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -12101,9 +12128,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC6_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
-	word_offset = ((mmTPC6_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC6_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC6_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
 
@@ -12191,7 +12219,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC6_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC6_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC6_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -12204,10 +12232,11 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC6_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-								PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 
-	word_offset = ((mmTPC6_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+	word_offset =
+		((mmTPC6_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC6_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -12250,7 +12279,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC6_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC6_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC6_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -12291,7 +12320,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC6_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC6_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 
 	mask = 1U << ((mmTPC6_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
@@ -12328,7 +12357,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC6_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC6_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC6_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC6_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -12521,7 +12550,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC7_QM_CP_MSG_BASE2_ADDR_LO_2 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC7_QM_CP_MSG_BASE2_ADDR_LO_2 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC7_QM_CP_MSG_BASE2_ADDR_LO_2 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_CP_MSG_BASE2_ADDR_LO_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_CP_MSG_BASE2_ADDR_LO_4 & 0x7F) >> 2);
@@ -12557,10 +12586,11 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC7_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & ~0xFFF) +
-								PROT_BITS_OFFS;
+		  PROT_BITS_OFFS;
 
-	word_offset = ((mmTPC7_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS)
-								>> 7) << 2;
+	word_offset =
+		((mmTPC7_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 
 	mask = 1U << ((mmTPC7_QM_CP_LDMA_DST_BASE_LO_OFFSET_3 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_CP_LDMA_DST_BASE_LO_OFFSET_4 & 0x7F) >> 2);
@@ -12649,7 +12679,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC7_QM_ARB_MST_AVAIL_CRED_24 & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC7_QM_ARB_MST_AVAIL_CRED_24 & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC7_QM_ARB_MST_AVAIL_CRED_24 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_MST_AVAIL_CRED_25 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_MST_AVAIL_CRED_26 & 0x7F) >> 2);
@@ -12662,9 +12692,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC7_QM_ARB_MST_CHOISE_PUSH_OFST_23 & ~0xFFF) +
-			PROT_BITS_OFFS;
-	word_offset = ((mmTPC7_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS)
-								>> 7) << 2;
+		  PROT_BITS_OFFS;
+	word_offset =
+		((mmTPC7_QM_ARB_MST_CHOISE_PUSH_OFST_23 & PROT_BITS_OFFS) >> 7)
+		<< 2;
 	mask = 1U << ((mmTPC7_QM_ARB_SLV_CHOISE_WDT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_MSG_MAX_INFLIGHT & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_MSG_AWUSER_31_11 & 0x7F) >> 2);
@@ -12674,7 +12705,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC7_QM_ARB_STATE_STS & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmTPC7_QM_ARB_STATE_STS & PROT_BITS_OFFS) >> 7)	<< 2;
+	word_offset = ((mmTPC7_QM_ARB_STATE_STS & PROT_BITS_OFFS) >> 7) << 2;
 	mask = 1U << ((mmTPC7_QM_ARB_STATE_STS & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_CHOISE_FULLNESS_STS & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_MSG_STS & 0x7F) >> 2);
@@ -12706,8 +12737,8 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 
 	pb_addr = (mmTPC7_QM_ARB_MST_CRED_STS_20 & ~0xFFF) + PROT_BITS_OFFS;
-	word_offset = ((mmTPC7_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS)	>> 7)
-									<< 2;
+	word_offset = ((mmTPC7_QM_ARB_MST_CRED_STS_20 & PROT_BITS_OFFS) >> 7)
+		      << 2;
 	mask = 1U << ((mmTPC7_QM_ARB_MST_CRED_STS_20 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_MST_CRED_STS_21 & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_QM_ARB_MST_CRED_STS_22 & 0x7F) >> 2);
@@ -12748,7 +12779,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC7_QM_GLBL_MEM_INIT_BUSY & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC7_QM_GLBL_MEM_INIT_BUSY & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC7_QM_GLBL_MEM_INIT_BUSY & 0x7F) >> 2);
 
 	WREG32(pb_addr + word_offset, ~mask);
@@ -12784,7 +12815,7 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 
 	pb_addr = (mmTPC7_CFG_TSB_CFG_MAX_SIZE & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmTPC7_CFG_TSB_CFG_MAX_SIZE & PROT_BITS_OFFS) >> 7)
-									<< 2;
+		      << 2;
 	mask = 1U << ((mmTPC7_CFG_TSB_CFG_MAX_SIZE & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_CFG_DBGMEM_ADD & 0x7F) >> 2);
 	mask |= 1U << ((mmTPC7_CFG_DBGMEM_DATA_WR & 0x7F) >> 2);
@@ -12874,56 +12905,56 @@ static void gaudi_init_range_registers_lbw(struct hl_device *hdev)
 	u32 lbw_rng_end[GAUDI_NUMBER_OF_LBW_RANGES];
 	int i, j;
 
-	lbw_rng_start[0]  = (0xFC0E8000 & 0x3FFFFFF) - 1; /* 0x000E7FFF */
-	lbw_rng_end[0]    = (0xFC11FFFF & 0x3FFFFFF) + 1; /* 0x00120000 */
+	lbw_rng_start[0] = (0xFC0E8000 & 0x3FFFFFF) - 1; /* 0x000E7FFF */
+	lbw_rng_end[0] = (0xFC11FFFF & 0x3FFFFFF) + 1; /* 0x00120000 */
 
-	lbw_rng_start[1]  = (0xFC1E8000 & 0x3FFFFFF) - 1; /* 0x001E7FFF */
-	lbw_rng_end[1]    = (0xFC48FFFF & 0x3FFFFFF) + 1; /* 0x00490000 */
+	lbw_rng_start[1] = (0xFC1E8000 & 0x3FFFFFF) - 1; /* 0x001E7FFF */
+	lbw_rng_end[1] = (0xFC48FFFF & 0x3FFFFFF) + 1; /* 0x00490000 */
 
-	lbw_rng_start[2]  = (0xFC600000 & 0x3FFFFFF) - 1; /* 0x005FFFFF */
-	lbw_rng_end[2]    = (0xFCC48FFF & 0x3FFFFFF) + 1; /* 0x00C49000 */
+	lbw_rng_start[2] = (0xFC600000 & 0x3FFFFFF) - 1; /* 0x005FFFFF */
+	lbw_rng_end[2] = (0xFCC48FFF & 0x3FFFFFF) + 1; /* 0x00C49000 */
 
-	lbw_rng_start[3]  = (0xFCC4A000 & 0x3FFFFFF) - 1; /* 0x00C49FFF */
-	lbw_rng_end[3]    = (0xFCCDFFFF & 0x3FFFFFF) + 1; /* 0x00CE0000 */
+	lbw_rng_start[3] = (0xFCC4A000 & 0x3FFFFFF) - 1; /* 0x00C49FFF */
+	lbw_rng_end[3] = (0xFCCDFFFF & 0x3FFFFFF) + 1; /* 0x00CE0000 */
 
-	lbw_rng_start[4]  = (0xFCCE4000 & 0x3FFFFFF) - 1; /* 0x00CE3FFF */
-	lbw_rng_end[4]    = (0xFCD1FFFF & 0x3FFFFFF) + 1; /* 0x00D20000 */
+	lbw_rng_start[4] = (0xFCCE4000 & 0x3FFFFFF) - 1; /* 0x00CE3FFF */
+	lbw_rng_end[4] = (0xFCD1FFFF & 0x3FFFFFF) + 1; /* 0x00D20000 */
 
-	lbw_rng_start[5]  = (0xFCD24000 & 0x3FFFFFF) - 1; /* 0x00D23FFF */
-	lbw_rng_end[5]    = (0xFCD5FFFF & 0x3FFFFFF) + 1; /* 0x00D60000 */
+	lbw_rng_start[5] = (0xFCD24000 & 0x3FFFFFF) - 1; /* 0x00D23FFF */
+	lbw_rng_end[5] = (0xFCD5FFFF & 0x3FFFFFF) + 1; /* 0x00D60000 */
 
-	lbw_rng_start[6]  = (0xFCD64000 & 0x3FFFFFF) - 1; /* 0x00D63FFF */
-	lbw_rng_end[6]    = (0xFCD9FFFF & 0x3FFFFFF) + 1; /* 0x00DA0000 */
+	lbw_rng_start[6] = (0xFCD64000 & 0x3FFFFFF) - 1; /* 0x00D63FFF */
+	lbw_rng_end[6] = (0xFCD9FFFF & 0x3FFFFFF) + 1; /* 0x00DA0000 */
 
-	lbw_rng_start[7]  = (0xFCDA4000 & 0x3FFFFFF) - 1; /* 0x00DA3FFF */
-	lbw_rng_end[7]    = (0xFCDDFFFF & 0x3FFFFFF) + 1; /* 0x00DE0000 */
+	lbw_rng_start[7] = (0xFCDA4000 & 0x3FFFFFF) - 1; /* 0x00DA3FFF */
+	lbw_rng_end[7] = (0xFCDDFFFF & 0x3FFFFFF) + 1; /* 0x00DE0000 */
 
-	lbw_rng_start[8]  = (0xFCDE4000 & 0x3FFFFFF) - 1; /* 0x00DE3FFF */
-	lbw_rng_end[8]    = (0xFCE05FFF & 0x3FFFFFF) + 1; /* 0x00E06000 */
+	lbw_rng_start[8] = (0xFCDE4000 & 0x3FFFFFF) - 1; /* 0x00DE3FFF */
+	lbw_rng_end[8] = (0xFCE05FFF & 0x3FFFFFF) + 1; /* 0x00E06000 */
 
-	lbw_rng_start[9]  = (0xFCFC9000 & 0x3FFFFFF) - 1; /* 0x00FC8FFF */
-	lbw_rng_end[9]    = (0xFFFFFFFE & 0x3FFFFFF) + 1; /* 0x03FFFFFF */
+	lbw_rng_start[9] = (0xFCFC9000 & 0x3FFFFFF) - 1; /* 0x00FC8FFF */
+	lbw_rng_end[9] = (0xFFFFFFFE & 0x3FFFFFF) + 1; /* 0x03FFFFFF */
 
-	for (i = 0 ; i < GAUDI_NUMBER_OF_LBW_RR_REGS ; i++) {
+	for (i = 0; i < GAUDI_NUMBER_OF_LBW_RR_REGS; i++) {
 		WREG32(gaudi_rr_lbw_hit_aw_regs[i],
-				(1 << GAUDI_NUMBER_OF_LBW_RANGES) - 1);
+		       (1 << GAUDI_NUMBER_OF_LBW_RANGES) - 1);
 		WREG32(gaudi_rr_lbw_hit_ar_regs[i],
-				(1 << GAUDI_NUMBER_OF_LBW_RANGES) - 1);
+		       (1 << GAUDI_NUMBER_OF_LBW_RANGES) - 1);
 	}
 
-	for (i = 0 ; i < GAUDI_NUMBER_OF_LBW_RR_REGS ; i++)
-		for (j = 0 ; j < GAUDI_NUMBER_OF_LBW_RANGES ; j++) {
+	for (i = 0; i < GAUDI_NUMBER_OF_LBW_RR_REGS; i++)
+		for (j = 0; j < GAUDI_NUMBER_OF_LBW_RANGES; j++) {
 			WREG32(gaudi_rr_lbw_min_aw_regs[i] + (j << 2),
-							lbw_rng_start[j]);
+			       lbw_rng_start[j]);
 
 			WREG32(gaudi_rr_lbw_min_ar_regs[i] + (j << 2),
-							lbw_rng_start[j]);
+			       lbw_rng_start[j]);
 
 			WREG32(gaudi_rr_lbw_max_aw_regs[i] + (j << 2),
-							lbw_rng_end[j]);
+			       lbw_rng_end[j]);
 
 			WREG32(gaudi_rr_lbw_max_ar_regs[i] + (j << 2),
-							lbw_rng_end[j]);
+			       lbw_rng_end[j]);
 		}
 }
 
@@ -12958,12 +12989,12 @@ static void gaudi_init_range_registers_hbw(struct hl_device *hdev)
 	 * 6th range is the host
 	 */
 
-	for (i = 0 ; i < GAUDI_NUMBER_OF_HBW_RR_REGS ; i++) {
+	for (i = 0; i < GAUDI_NUMBER_OF_HBW_RR_REGS; i++) {
 		WREG32(gaudi_rr_hbw_hit_aw_regs[i], 0x1F);
 		WREG32(gaudi_rr_hbw_hit_ar_regs[i], 0x1D);
 	}
 
-	for (i = 0 ; i < GAUDI_NUMBER_OF_HBW_RR_REGS ; i++) {
+	for (i = 0; i < GAUDI_NUMBER_OF_HBW_RR_REGS; i++) {
 		WREG32(gaudi_rr_hbw_base_low_aw_regs[i], dram_addr_lo);
 		WREG32(gaudi_rr_hbw_base_low_ar_regs[i], dram_addr_lo);
 
@@ -13075,5 +13106,4 @@ void gaudi_init_security(struct hl_device *hdev)
 
 void gaudi_ack_protection_bits_errors(struct hl_device *hdev)
 {
-
 }
