@@ -3,6 +3,7 @@
 BUILD_TYPE="debug"
 COMPILE_TYPE="dynamic"
 PROJECT_NAME="$(basename "$PWD")"
+COMPILER="gcc"
 
 help(){
 	if [[ $# -eq 0 ]]; then
@@ -11,7 +12,7 @@ help(){
 		TEXT_TO_ADD="\n\n$1"
 	fi
 
-       	echo -e "Usage:\n"$0" <build_type> <compile_type>"$TEXT_TO_ADD""
+       	echo -e "Usage:\n"$0" <build_type> <compile_type> <compiler>"$TEXT_TO_ADD""
 }
 
 get_cflags(){
@@ -40,6 +41,10 @@ elif [[ $# -eq 1 ]]; then
 elif [[ $# -eq 2 ]]; then
 	BUILD_TYPE="$1"
 	COMPILE_TYPE="$2"
+elif [[ $# -eq 3 ]]; then
+	BUILD_TYPE="$1"
+	COMPILE_TYPE="$2"
+	COMPILER="$3"
 else
 	help "Too many parameters"
 	exit 1
@@ -47,5 +52,5 @@ fi
 
 get_cflags
 
-gcc $CFLAGS -Iinclude src/*c -o "$PROJECT_NAME"	
+$COMPILER $CFLAGS -Iinclude src/*c -o "$PROJECT_NAME"	
 

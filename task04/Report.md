@@ -131,3 +131,45 @@ print_info<br>
 .data<br>
 .bss<br>
 .comment<br>
+
+
+# TARGET
+# aarch-linux-gnu-readelf
+
+ELF Header:<br>
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 <br>
+  Class:                             ELF64<br>
+  Data:                              2's complement, little endian<br>
+  Version:                           1 (current)<br>
+  OS/ABI:                            UNIX - System V<br>
+  ABI Version:                       0<br>
+  Type:                              DYN (Position-Independent Executable file)<br>
+  Machine:                           AArch64<br>
+  Version:                           0x1<br>
+  Entry point address:               0xa40<br>
+  Start of program headers:          64 (bytes into file)<br>
+  Start of section headers:          69088 (bytes into file)<br>
+  Flags:                             0x0<br>
+  Size of this header:               64 (bytes)<br>
+  Size of program headers:           56 (bytes)<br>
+  Number of program headers:         10<br>
+  Size of section headers:           64 (bytes)<br>
+  Number of section headers:         29<br>
+  Section header string table index: 28<br>
+
+стало менше заголовків<br>
+ 
+# aarch-linux-gnu-readelf -h
+
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-aarch64.so.1]
+
+	linux-vdso.so.1 вже не є необхідним <br>
+
+# aarch-linux-gnu-size
+   text	   data	    bss	    dec	    hex	filename<br>
+   3080	    736	      8	   3824	    ef0	task04<br>
+Загальний розмір збільшився<br>
+
+# aarch-linux-gnu-strings
+the code wasn`t changed
