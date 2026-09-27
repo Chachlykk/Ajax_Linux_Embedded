@@ -175,7 +175,7 @@ ELF Header:<br>
 the code wasn`t changed
 #ON TARGET
 
-#readelf
+# readelf
 ELF Header:<br>
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 <br>
   Class:                             ELF64<br>
