@@ -175,7 +175,7 @@ ELF Header:<br>
 the code wasn`t changed
 #ON TARGET
 
-#readelf
+# readelf
 ELF Header:<br>
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 <br>
   Class:                             ELF64<br>
@@ -197,16 +197,16 @@ ELF Header:<br>
   Number of section headers:         29<br>
   Section header string table index: 28<br>
 
-#ldd
+# ldd
 	linux-vdso.so.1 (0x0000ffff804da000)<br>
 	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000ffff802a0000)<br>
 	/lib/ld-linux-aarch64.so.1 (0x0000ffff80490000)<br>
 
-#size
+# size
    text	   data	    bss	    dec	    hex	filename<br>
    2792	    688	      8	   3488	    da0	task04<br>
 
-#srings
+# srings
 Z/lib/ld-linux-aarch64.so.1<br>
 puts<br>
 ctime<br>
@@ -303,8 +303,8 @@ fprintf@GLIBC_2.17<br>
 .bss<br>
 .comment<br>
 
-#Static TARGET
-#readelf
+# Static TARGET
+# readelf
 ELF Header:<br>
   Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00 <br>
   Class:                             ELF64<br>
@@ -325,15 +325,15 @@ ELF Header:<br>
   Size of section headers:           64 (bytes)<br>
   Number of section headers:         24<br>
   Section header string table index: 23<br>
-#size
+# size
    text	   data	    bss	    dec	    hex	filename<br>
  620129	  22548	  22208	 664885	  a2535	task04<br>
 
-#srings
+# srings
 Вивід команди має дивний вигляд, це через статичне лінкування, оскільки код програми містить не посиланя на функції з бібліотеки, а самі функції
 
-#Static on HOST
-#readelf
+# Static on HOST
+# readelf
 ELF Header:<br>
   Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00 <br>
   Class:                             ELF64<br>
@@ -355,15 +355,15 @@ ELF Header:<br>
   Number of section headers:         28<br>
   Section header string table index: 27<br>
 
-#size
+# size
    text	   data	    bss	    dec	    hex	filename<br>
  857220	  22832	  23040	 903092	  dc7b4	task04<br>
 
-#strings
+# strings
 Вивід команди має дивний вигляд, це через статичне лінкування, оскільки код програми містить не посиланя на функції з бібліотеки, а самі функції
 
-#Static on HOST for TARGET
-#readelf
+# Static on HOST for TARGET
+# readelf
 ELF Header:<br>
   Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00 <br>
   Class:                             ELF64<br>
@@ -385,7 +385,7 @@ ELF Header:<br>
   Number of section headers:         25<br>
   Section header string table index: 24<br>
 
-#size
+# size
    text	   data	    bss	    dec	    hex	filename<br>
  642030	  21580	  22224	 685834	  a770a	task04<br>
 
