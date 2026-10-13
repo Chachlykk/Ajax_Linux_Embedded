@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+#include "logger.h"
 
 #define BUFFER_SIZE 256
 
@@ -95,7 +96,7 @@ static void send_answer(int fd, char* buffer, size_t pos) {
   }
 }
 
-void uart_comunication(int fd) {
+void uart_comunication(int fd, FILE* log_file) {
   char buffer[BUFFER_SIZE];
   size_t pos = 0;
   char ch;
@@ -110,15 +111,17 @@ void uart_comunication(int fd) {
     if (pos < BUFFER_SIZE - 1) {
       buffer[pos++] = ch;
     } else {
+      log_message(log_file, buffer, pos);
       send_answer(fd, buffer, pos);
       pos = 0;
     }
     // check end of line
     if (is_r && ch == '\n') {
+      log_message(log_file, buffer, pos);
       send_answer(fd, buffer, pos);
       pos = 0;
     }
-    if (ch == '\r') {
+    if (ch == '\n') {
       is_r = 1;
     } else {
       is_r = 0;

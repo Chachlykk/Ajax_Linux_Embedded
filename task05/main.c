@@ -4,13 +4,15 @@
 #include <sys/types.h>
 #include <termios.h>
 #include <unistd.h>
+#include "logger.h"
 #include "tty_settings.h"
 
 int main(int argc, char* argv[]) {
+  FILE* log_file = create_log();
+
   char* tty_name = argv[1];
 
   struct termios tty;
-
   int fd = open(tty_name, O_RDWR | O_NOCTTY);
   if (fd == -1) {
     perror("open");
@@ -25,7 +27,7 @@ int main(int argc, char* argv[]) {
 
   print_info(&tty);
 
-  uart_comunication(fd);
+  uart_comunication(fd, log_file);
 
   close(fd);
   return 0;

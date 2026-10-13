@@ -7,7 +7,7 @@ CFLAGS ?= -Wall -Wextra -Iinclude
 
 # Target application
 TARGET := $(BUILD_DIR)/serial_echo
-SRCS := main.c src/tty_settings.c
+SRCS := main.c src/tty_settings.c src/logger.c
 OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
 
 .PHONY: all clean deploy
