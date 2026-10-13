@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -7,7 +8,22 @@
 #include "logger.h"
 #include "tty_settings.h"
 
+volatile sig_atomic_t stop = 0;
+
+void handle_signal(int sig) {
+  (void)sig;
+  stop = 1;
+}
+
 int main(int argc, char* argv[]) {
+  struct sigaction sa = {0};
+  sa.sa_handler = handle_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+
+  sigaction(SIGINT, &sa, NULL);
+  sigaction(SIGTERM, &sa, NULL);
+
   FILE* log_file = create_log();
 
   char* tty_name = argv[1];
@@ -29,6 +45,8 @@ int main(int argc, char* argv[]) {
 
   uart_comunication(fd, log_file);
 
+  // printf("END\n");
   close(fd);
+  fclose(log_file);
   return 0;
 }

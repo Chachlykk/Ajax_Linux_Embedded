@@ -1,6 +1,7 @@
 #include "tty_settings.h"
 #include <ctype.h>
 #include <errno.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <termios.h>
@@ -8,6 +9,8 @@
 #include "logger.h"
 
 #define BUFFER_SIZE 256
+
+extern volatile sig_atomic_t stop;
 
 static void print_data_bits(struct termios* tty) {
   printf("Data bits:");
@@ -45,8 +48,9 @@ static unsigned int baud_to_int(speed_t speed) {
   }
 }
 void setup_tty(int fd, struct termios* tty) {
-  tty->c_cc[VMIN] = 1;
-  tty->c_cc[VTIME] = 0;
+  tty->c_lflag &= ~ICANON;
+  tty->c_cc[VMIN] = 0;
+  tty->c_cc[VTIME] = 1;
 
   if (tcsetattr(fd, TCSANOW, tty) == -1) {
     perror("tcsetattr");
@@ -101,10 +105,13 @@ void uart_comunication(int fd, FILE* log_file) {
   size_t pos = 0;
   char ch;
   uint8_t is_r = 0;  // start of end of line symbol
-  while (1) {
+  while (!stop) {
     ssize_t n = read(fd, &ch, 1);
-    if (n <= 0) {
+    if (n < 0) {
       perror("read");
+      break;
+    }
+    if (n == 0) {
       continue;
     }
 
@@ -121,7 +128,7 @@ void uart_comunication(int fd, FILE* log_file) {
       send_answer(fd, buffer, pos);
       pos = 0;
     }
-    if (ch == '\n') {
+    if (ch == '\r') {
       is_r = 1;
     } else {
       is_r = 0;
