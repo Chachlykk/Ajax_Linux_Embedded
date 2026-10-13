@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 
   struct termios tty;
 
-  int fd = open(tty_name, O_WRONLY | O_NOCTTY);
+  int fd = open(tty_name, O_RDWR | O_NOCTTY);
   if (fd == -1) {
     perror("open");
     return 1;
@@ -21,6 +21,8 @@ int main(int argc, char* argv[]) {
     perror("tcgetattr");
     return 1;
   }
+  setup_tty(fd, &tty);
+
   print_info(&tty);
 
   uart_comunication(fd);

@@ -7,4 +7,6 @@ void print_info(struct termios* tty);
 
 void uart_comunication(int fd);
 
+void setup_tty(int fd, struct termios* tty);
+
 #endif  // TTY_SETTINGS_H
